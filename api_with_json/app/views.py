@@ -37,7 +37,7 @@ def add_user():
     elif database.Database().add_user(user['email'],user['username'],
                                       user['full_name'],user['information_bio'],
                                       user['password']):
-        response = { 'code': 201, 'response': 'Created','type_api' : 'not_json'}
+        response = { 'code': 201, 'response': 'Created', 'type_api' : 'json'}
     else:
-        response = {'code': 409,'response': 'Conflict','type_api' : 'not_json'}
+        response = {'code': 409,'response': 'Conflict', 'type_api' : 'json'}
     return jsonify(response)

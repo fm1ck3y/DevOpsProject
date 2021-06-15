@@ -24,7 +24,7 @@ def not_found(error=None):
     })
 
 
-@app.route('/without_json/api/v1.0/add_user', methods=['GET'])
+@app.route('/with_json/api/v1.0/add_user', methods=['GET'])
 @logging_request
 def add_user():
     user = json.loads(request.args.get('user'))

@@ -6,4 +6,4 @@ export PASSWORD_DB=pass
 export HOST_DB=127.0.0.1
 export PORT_DB=5432
 
-#flask run
+flask run

@@ -24,19 +24,18 @@ def not_found(error=None):
     })
 
 
-@app.route('/without_json/api/v1.0/add_user', methods=['GET'])
+@app.route('/api/v1.0/add_user', methods=['GET'])
 @logging_request
 def add_user():
     user = json.loads(request.args.get('user'))
+    app.logger.info(user)
     if 'email' not in user or \
             'username' not in user or \
             'full_name' not in user or \
             'information_bio' not in user or \
             'password' not in user:
         response = {'code': 409, 'response': 'Conflict'}
-    elif database.Database().add_user(user['email'],user['username'],
-                                      user['full_name'],user['information_bio'],
-                                      user['password']):
+    elif database.Database().add_user(user['email'],user['username'],user['full_name'],user['information_bio'],user['password']):
         response = { 'code': 201, 'response': 'Created','type_api' : 'not_json'}
     else:
         response = {'code': 409,'response': 'Conflict','type_api' : 'not_json'}

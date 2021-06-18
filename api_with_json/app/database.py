@@ -17,6 +17,7 @@ class Database:
                                 password=PASSWORD_DB, host=HOST_DB,port = PORT_DB)
             if self.conn is not None:
                 logging.debug(f"Good connection to {DBNAME} with host= {HOST_DB}")
+                self.create_table()
                 return self.conn.cursor()
             raise psycopg2.DatabaseError
         except psycopg2.DatabaseError as e:
@@ -31,6 +32,12 @@ class Database:
         except Exception as e:
             log.debug(f"Bad close connection to {DBNAME}")
 
+    def create_table(self):
+        sql = """CREATE TABLE IF NOT EXISTS users_nosql (
+id serial PRIMARY KEY NOT NULL ,
+data json NOT NULL);"""
+        self.execute_sql(sql)
+
     def execute_sql(self,sql):
         result = False
         try:
@@ -42,10 +49,9 @@ class Database:
         except psycopg2.DatabaseError as e:
             log.error(f"Bad execute to {DBNAME}\nError = {e}\nSQL execute = {sql}")
         finally:
-            self.close_connection()
             return result
 
-    def add_user(self,email,username,full_name,information_bio,password):
-        sql = f"INSERT INTO users (email,username,name,information_bio,password) " \
-              f"VALUES ('{email}','{username}','{full_name}','{information_bio}','{password}');"
+    def add_user(self,user):
+        sql = f"INSERT INTO users_nosql (data) " \
+              f"VALUES ('{user}');"
         return self.execute_sql(sql)

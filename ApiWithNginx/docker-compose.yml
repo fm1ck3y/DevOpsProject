@@ -8,6 +8,8 @@ services:
       - "5002:5000"
     env_file:
       - db.env
+    environment:
+      - POSTGRES_HOST=db
 
   api_without_json:
     restart: always
@@ -16,6 +18,8 @@ services:
       - "5001:5000"
     env_file:
       - db.env
+    environment:
+      - POSTGRES_HOST=db
 
   nginx:
     restart: always

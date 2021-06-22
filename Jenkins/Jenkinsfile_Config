@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'AWS-Agent'
+    }
     parameters {
         string(name: 'weight_api_without_json', defaultValue: '1', description: 'Weight  for api without json:')
         string(name: 'weight_api_with_json', defaultValue: '1', description: 'Weight  for api with json:')
@@ -8,50 +10,51 @@ pipeline {
     }
 
     environment {
-        PATH_TO_DOCKER_COMPOSE = "/opt/DevOpsProject/docker-compose.yml"
-        PATH_TO_NGINX_CONF_LOCAL = "/opt/DevOpsProject/nginx/nginx.conf"
+        PATH_TO_DOCKER_COMPOSE = "/opt/ApiWithNginx/docker-compose.yml"
+        PATH_TO_NGINX_CONF_LOCAL = "/opt/ApiWithNginx/nginx/nginx.conf"
         PATH_TO_NGINX_CONF_DOCKER = "/etc/nginx/conf.d/default.conf"
-        PATH_TO_TEMPLATE_NGINX_CONF = "/opt/DevOpsProject/nginx/nginx.conf.template"
-        PATH_TO_SCRIPT_NGINX_CONF = "/opt/DevOpsProject/nginx/change_configuration.py"
+        PATH_TO_TEMPLATE_NGINX_CONF = "/opt/ApiWithNginx/nginx/nginx.conf.template"
+        PATH_TO_SCRIPT_NGINX_CONF = "/opt/ApiWithNginx/nginx/change_configuration.py"
         NAME_DOCKER_NGINX = "devopsproject_nginx"
     }
+
 
     stages {
         stage('Change weights in nginx.conf'){
             when { expression { return params.selected_type_job == 'Change Configuration' } }
                 steps {
-                    sh "python3 ${env.PATH_TO_SCRIPT_NGINX_CONF} ${params.weight_api_without_json} ${params.weight_api_with_json}"
-                    sh "docker cp ${env.PATH_TO_NGINX_CONF_LOCAL} ${env.NAME_DOCKER_NGINX}_1:${env.PATH_TO_NGINX_CONF_DOCKER}"
-                    sh "docker exec -t ${env.NAME_DOCKER_NGINX}_1 nginx -s reload"
-                    sh "docker exec -t ${env.NAME_DOCKER_NGINX}_1 cat ${env.PATH_TO_NGINX_CONF_DOCKER}"
+                    sh "sudo python3 ${env.PATH_TO_SCRIPT_NGINX_CONF} ${params.weight_api_without_json} ${params.weight_api_with_json}"
+                    sh "sudo docker cp ${env.PATH_TO_NGINX_CONF_LOCAL} ${env.NAME_DOCKER_NGINX}_1:${env.PATH_TO_NGINX_CONF_DOCKER}"
+                    sh "sudo docker exec -t ${env.NAME_DOCKER_NGINX}_1 nginx -s reload"
+                    sh "sudo docker exec -t ${env.NAME_DOCKER_NGINX}_1 cat ${env.PATH_TO_NGINX_CONF_DOCKER}"
                 }
         }
 
         stage('Build dockers'){
             when { expression { return params.selected_type_job == 'Start' } }
             steps{
-                sh "docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} build"
+                sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} build"
             }
         }
 
         stage ('Restart dockers') {
             when { expression { return params.selected_type_job == 'Change Configuration' || params.selected_type_job == 'Restart' } }
                 steps {
-                    sh "docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} restart"
+                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} restart"
                 }
         }
 
         stage ('Stop dockers') {
             when { expression { return params.selected_type_job == 'Stop' } }
                 steps {
-                    sh "docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} down"
+                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} down"
                 }
         }
 
         stage ('Start dockers') {
             when { expression { return params.selected_type_job == 'Start' } }
                 steps {
-                    sh "docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} up -d"
+                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} up -d"
                 }
         }
     }

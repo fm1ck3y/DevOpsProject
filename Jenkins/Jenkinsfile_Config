@@ -8,17 +8,17 @@ pipeline {
         choice(name: 'selected_type_job', choices: ['Restart', 'Start', 'Stop','Change Configuration'], description: 'Typed run job')
 
     }
-
+    
     environment {
         PATH_TO_DOCKER_COMPOSE = "/opt/ApiWithNginx/docker-compose.yml"
         PATH_TO_NGINX_CONF_LOCAL = "/opt/ApiWithNginx/nginx/nginx.conf"
         PATH_TO_NGINX_CONF_DOCKER = "/etc/nginx/conf.d/default.conf"
         PATH_TO_TEMPLATE_NGINX_CONF = "/opt/ApiWithNginx/nginx/nginx.conf.template"
         PATH_TO_SCRIPT_NGINX_CONF = "/opt/ApiWithNginx/nginx/change_configuration.py"
-        NAME_DOCKER_NGINX = "devopsproject_nginx"
+        NAME_DOCKER_NGINX = "apiwithnginx_nginx"
     }
-
-
+    
+    
     stages {
         stage('Change weights in nginx.conf'){
             when { expression { return params.selected_type_job == 'Change Configuration' } }
@@ -29,28 +29,28 @@ pipeline {
                     sh "sudo docker exec -t ${env.NAME_DOCKER_NGINX}_1 cat ${env.PATH_TO_NGINX_CONF_DOCKER}"
                 }
         }
-
+        
         stage('Build dockers'){
             when { expression { return params.selected_type_job == 'Start' } }
             steps{
                 sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} build"
             }
         }
-
+        
         stage ('Restart dockers') {
-            when { expression { return params.selected_type_job == 'Change Configuration' || params.selected_type_job == 'Restart' } }
+            when { expression { return params.selected_type_job == 'Restart' } }
                 steps {
                     sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} restart"
                 }
         }
-
+        
         stage ('Stop dockers') {
             when { expression { return params.selected_type_job == 'Stop' } }
                 steps {
-                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} down"
+                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} down" 
                 }
         }
-
+        
         stage ('Start dockers') {
             when { expression { return params.selected_type_job == 'Start' } }
                 steps {

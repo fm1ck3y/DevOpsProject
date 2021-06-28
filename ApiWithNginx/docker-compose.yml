@@ -21,11 +21,21 @@ services:
     environment:
       - POSTGRES_HOST=db
 
+  statistics:
+    restart: always
+    build: ./statistics
+    ports:
+      - "5003:5000"
+    env_file:
+      - db.env
+    environment:
+      - POSTGRES_HOST=db
+
   nginx:
     restart: always
     build: ./nginx
     ports:
-      - "8080:80"
+      - "80:80"
       - "443:443"
 
   db:

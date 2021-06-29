@@ -1,6 +1,6 @@
 ---
 - name: Install Docker and Configure
-  hosts: aws-dockers
+  hosts: all
   become: true
 
   vars:

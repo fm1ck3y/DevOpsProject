@@ -5,8 +5,8 @@ if len(sys.argv) < 3:
     print("Invalid count arguments.")
     exit(0)
 
-PATH_TO_TEMPLATE_NGINX_CONF = "/opt/ApiWithNginx/nginx/nginx.conf.template"
-PATH_TO_NGINX_CONF_LOCAL = "/opt/ApiWithNginx/nginx/nginx.conf"
+PATH_TO_TEMPLATE_NGINX_CONF = "/opt/ApiWithNginx/nginx/conf.d/nginx.conf.template"
+PATH_TO_NGINX_CONF_LOCAL = "/opt/ApiWithNginx/nginx/conf.d/nginx.conf"
 
 with open(PATH_TO_TEMPLATE_NGINX_CONF,'r') as f:
     text_file = f.read()

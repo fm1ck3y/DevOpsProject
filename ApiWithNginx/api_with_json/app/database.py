@@ -10,6 +10,8 @@ PASSWORD_DB = os.getenv('POSTGRES_PASSWORD')
 HOST_DB = os.getenv('POSTGRES_HOST')
 PORT_DB = os.getenv('POSTGRES_PORT')
 
+TABLE_NAME_WITH_SQL = os.getenv('TABLE_NAME_WITH_SQL')
+
 class Database:
     def connect(self):
         try:
@@ -33,7 +35,7 @@ class Database:
             log.debug(f"Bad close connection to {DBNAME}")
 
     def create_table(self):
-        sql = """CREATE TABLE IF NOT EXISTS users_nosql (
+        sql = f"""CREATE TABLE IF NOT EXISTS {TABLE_NAME_WITH_SQL} (
 id serial PRIMARY KEY NOT NULL ,
 data json NOT NULL);"""
         self.execute_sql(sql)
@@ -52,6 +54,6 @@ data json NOT NULL);"""
             return result
 
     def add_user(self,user):
-        sql = f"INSERT INTO users_nosql (data) " \
+        sql = f"INSERT INTO {TABLE_NAME_WITH_SQL} (data) " \
               f"VALUES ('{user}');"
         return self.execute_sql(sql)

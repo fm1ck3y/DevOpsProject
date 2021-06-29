@@ -10,6 +10,8 @@ PASSWORD_DB = os.getenv('POSTGRES_PASSWORD')
 HOST_DB = os.getenv('POSTGRES_HOST')
 PORT_DB = os.getenv('POSTGRES_PORT')
 
+TABLE_NAME_WITHOUT_SQL = os.getenv('TABLE_NAME_WITHOUT_SQL')
+TABLE_NAME_WITH_SQL = os.getenv('TABLE_NAME_WITH_SQL')
 
 class Database:
     def connect(self):
@@ -43,45 +45,10 @@ class Database:
             log.error(f"Bad execute to {DBNAME}\nError = {e}\nSQL execute = {sql}")
             return 0
 
-    def create_table_sql(self):
-        sql = """CREATE TABLE IF NOT EXISTS users_nosql (
-        id serial PRIMARY KEY NOT NULL ,
-        data json NOT NULL);"""
-        try:
-            self.cursor = self.connect()
-            if self.cursor is not None:
-                self.cursor.execute(sql)
-                self.conn.commit()
-                return True
-        except psycopg2.DatabaseError as e:
-            log.error(f"Bad execute to {DBNAME}\nError = {e}\nSQL execute = {sql}")
-        finally:
-            return False
-
-    def create_table_json(self):
-        sql = """CREATE TABLE IF NOT EXISTS users_sql (
-id serial PRIMARY KEY NOT NULL ,
-email varchar(100) DEFAULT NULL,
-username varchar(64) DEFAULT NULL,
-name varchar(1000) DEFAULT NULL,
-information_bio text DEFAULT NULL,
-password varchar(256) DEFAULT NULL
-);"""
-        try:
-            self.cursor = self.connect()
-            if self.cursor is not None:
-                self.cursor.execute(sql)
-                self.conn.commit()
-                return True
-        except psycopg2.DatabaseError as e:
-            log.error(f"Bad execute to {DBNAME}\nError = {e}\nSQL execute = {sql}")
-        finally:
-            return False
-
     def count_users_sql(self):
-        count,*_ =  self.execute_sql("SELECT COUNT(id) FROM users_sql;")
+        count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITH_SQL};")
         return int(count)
 
     def count_users_json(self):
-        count,*_ =  self.execute_sql("SELECT COUNT(id) FROM users_nosql;")
+        count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITHOUT_SQL};")
         return int(count)

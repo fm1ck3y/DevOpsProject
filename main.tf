@@ -1,6 +1,7 @@
 locals {
   ssh_user         = "ubuntu"
-  private_key_path = "./keys/ssh/id_rsa.pub"
+  private_key_path = "./keys/ssh/id_rsa"
+  public_key_path  = "./keys/ssh/id_rsa.pub"
 }
 
 provider "aws" {
@@ -11,7 +12,7 @@ provider "aws" {
 
 resource "aws_key_pair" "main_vm" {
   key_name   = "devopsproject"
-  public_key = file(local.private_key_path)
+  public_key = file(local.public_key_path)
 }
 
 resource "aws_security_group" "main_vm" {
@@ -59,13 +60,14 @@ resource "aws_instance" "main_vm" {
     connection {
       type        = "ssh"
       user        = local.ssh_user
-      private_key = file(local.private_key_path)
+      private_key = "${file(local.private_key_path)}"
+      agent       = "false"
       host        = aws_instance.main_vm.public_ip
     }
   }
 
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook  -i ${aws_instance.main_vm.public_ip}, --private-key ${local.private_key_path} potgresql_nginx_docker.yml"
+    command = "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${local.ssh_user} -i ${aws_instance.main_vm.public_ip}, --private-key ${local.private_key_path} postgresql_nginx_docker.yml"
   }
 }
 

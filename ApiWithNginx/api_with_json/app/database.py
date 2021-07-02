@@ -10,7 +10,7 @@ PASSWORD_DB = os.getenv('POSTGRES_PASSWORD')
 HOST_DB = os.getenv('POSTGRES_HOST')
 PORT_DB = os.getenv('POSTGRES_PORT')
 
-TABLE_NAME_WITH_SQL = os.getenv('TABLE_NAME_WITH_SQL')
+TABLE_NAME_WITH_JSON = os.getenv('TABLE_NAME_WITH_JSON')
 
 class Database:
     def connect(self):
@@ -35,7 +35,7 @@ class Database:
             log.debug(f"Bad close connection to {DBNAME}")
 
     def create_table(self):
-        sql = f"""CREATE TABLE IF NOT EXISTS {TABLE_NAME_WITH_SQL} (
+        sql = f"""CREATE TABLE IF NOT EXISTS {TABLE_NAME_WITH_JSON} (
 id serial PRIMARY KEY NOT NULL ,
 data json NOT NULL);"""
         self.execute_sql(sql)
@@ -54,6 +54,6 @@ data json NOT NULL);"""
             return result
 
     def add_user(self,user):
-        sql = f"INSERT INTO {TABLE_NAME_WITH_SQL} (data) " \
+        sql = f"INSERT INTO {TABLE_NAME_WITH_JSON} (data) " \
               f"VALUES ('{user}');"
         return self.execute_sql(sql)

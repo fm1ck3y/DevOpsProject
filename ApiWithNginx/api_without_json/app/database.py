@@ -10,7 +10,7 @@ PASSWORD_DB = os.getenv('POSTGRES_PASSWORD')
 HOST_DB = os.getenv('POSTGRES_HOST')
 PORT_DB = os.getenv('POSTGRES_PORT')
 
-TABLE_NAME_WITHOUT_SQL = os.getenv('TABLE_NAME_WITHOUT_SQL')
+TABLE_NAME_WITHOUT_JSON = os.getenv('TABLE_NAME_WITHOUT_JSON')
 
 class Database:
     def connect(self):
@@ -28,7 +28,7 @@ class Database:
             return None
 
     def create_table(self):
-        sql = f"""CREATE TABLE IF NOT EXISTS {TABLE_NAME_WITHOUT_SQL} (
+        sql = f"""CREATE TABLE IF NOT EXISTS {TABLE_NAME_WITHOUT_JSON} (
 id serial PRIMARY KEY NOT NULL ,
 email varchar(100) DEFAULT NULL,
 username varchar(64) DEFAULT NULL,
@@ -67,6 +67,6 @@ password varchar(256) DEFAULT NULL
             "password": password
         }
         json_string = str(json).replace("'",'"')
-        sql = f"INSERT INTO {TABLE_NAME_WITHOUT_SQL} (email,username,name,information_bio,password) " \
+        sql = f"INSERT INTO {TABLE_NAME_WITHOUT_JSON} (email,username,name,information_bio,password) " \
               f"VALUES ('{email}','{username}','{full_name}','{information_bio}','{password}');"
         return self.execute_sql(sql)

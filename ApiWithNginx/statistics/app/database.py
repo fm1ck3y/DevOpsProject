@@ -10,8 +10,8 @@ PASSWORD_DB = os.getenv('POSTGRES_PASSWORD')
 HOST_DB = os.getenv('POSTGRES_HOST')
 PORT_DB = os.getenv('POSTGRES_PORT')
 
-TABLE_NAME_WITHOUT_SQL = os.getenv('TABLE_NAME_WITHOUT_SQL')
-TABLE_NAME_WITH_SQL = os.getenv('TABLE_NAME_WITH_SQL')
+TABLE_NAME_WITHOUT_JSON = os.getenv('TABLE_NAME_WITHOUT_JSON')
+TABLE_NAME_WITH_JSON = os.getenv('TABLE_NAME_WITH_JSON')
 
 class Database:
     def connect(self):
@@ -46,9 +46,9 @@ class Database:
             return 0
 
     def count_users_sql(self):
-        count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITH_SQL};")
+        count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITHOUT_JSON};")
         return int(count)
 
     def count_users_json(self):
-        count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITHOUT_SQL};")
+        count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITH_JSON};")
         return int(count)

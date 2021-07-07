@@ -7,8 +7,8 @@
       function drawChart() {
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Hours per Day'],
-          ['Количество в таблице с JSON',     {{ count_without_json }}],
-          ['Количество в таблице без JSON', {{ count_with_json }}]
+          ['Количество записей в таблице с SQL Data',     {{ count_without_json }}],
+          ['Количество записей в таблице с NoSQL Data', {{ count_with_json }}]
         ]);
 
         var options = {

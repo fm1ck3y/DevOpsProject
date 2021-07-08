@@ -71,7 +71,7 @@ resource "aws_instance" "main_vm" {
   }
 
   provisioner "local-exec" {
-    command = "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${local.ssh_user} -i ${aws_instance.main_vm.public_ip}, --private-key ${local.private_key_path} /opt/devops_project/postgresql_nginx_docker.yml"
+    command = "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${local.ssh_user} -i ${aws_instance.main_vm.public_ip}, --private-key ${local.private_key_path} /opt/TerraformAnsible/postgresql_nginx_docker.yml"
   }
 }
 

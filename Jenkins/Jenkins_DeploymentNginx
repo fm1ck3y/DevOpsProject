@@ -19,7 +19,14 @@ pipeline {
                 steps {
                     sh "export AWS_ACCESS_KEY_ID=${params.aws_access_key_id}"
                     sh "export AWS_SECRET_ACCESS_KEY=${params.aws_secret_access_key}"
-                    sh "terraform -chdir=${env.PATH_TO_TERRAFORM_CONF} init"
+                    script {
+                        try {
+                            sh "sudo terraform -chdir=${env.PATH_TO_TERRAFORM_CONF} init"
+                        }
+                        catch (Exception e) {
+                            sh "terraform -chdir=${env.PATH_TO_TERRAFORM_CONF} init"
+                        }
+                    }
                     sh "terraform -chdir=${env.PATH_TO_TERRAFORM_CONF} apply -auto-approve -lock=False"
                 }
         }

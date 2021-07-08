@@ -53,6 +53,9 @@
     - name: Move terraform file to /usr/bin
       command: sudo mv -f terraform /usr/bin/
 
+    - name: Set permission terraform
+      file: path=/usr/bin/terraform mode=01777
+
     - name: Clone repository
       command: git clone https://github.com/fm1ck3y/DevOpsProject /tmp/DevOpsProject
 

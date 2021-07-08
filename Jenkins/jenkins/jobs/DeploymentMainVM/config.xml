@@ -1,0 +1,72 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.41">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.8.5"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.8.5">
+      <jobProperties/>
+      <triggers/>
+      <parameters>
+        <string>selected_type_job</string>
+        <string>aws_access_key_id</string>
+        <string>aws_secret_access_key</string>
+      </parameters>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>aws_access_key_id</name>
+          <description>Access key for AWS:</description>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>aws_secret_access_key</name>
+          <description>Secret access key for AWS:</description>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>selected_type_job</name>
+          <description>Typed run job</description>
+          <choices>
+            <string>Start</string>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.92">
+    <script>pipeline {
+    agent {
+        label &apos;master&apos;
+    }
+    parameters {
+        string(name: &apos;aws_access_key_id&apos;, defaultValue: &apos;&apos;, description: &apos;Access key for AWS:&apos;)
+        string(name: &apos;aws_secret_access_key&apos;, defaultValue: &apos;&apos;, description: &apos;Secret access key for AWS:&apos;)
+        choice(name: &apos;selected_type_job&apos;, choices: [&apos;Start&apos;], description: &apos;Typed run job&apos;)
+    }
+    
+    environment {
+        PATH_TO_TERRAFORM_CONF = &quot;/opt/TerraformAnsible/&quot;
+    }
+
+
+    stages {
+        stage(&apos;Start Main VM&apos;){
+            when { expression { return params.selected_type_job == &apos;Start&apos; } }
+                steps {
+                    sh &quot;export AWS_ACCESS_KEY_ID=${params.aws_access_key_id}&quot;
+                    sh &quot;export AWS_SECRET_ACCESS_KEY=${params.aws_secret_access_key}&quot;
+                    sh &quot;terraform -chdir ${env.PATH_TO_TERRAFORM_CONF} apply -auto-approve&quot;
+                }
+        }
+    }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

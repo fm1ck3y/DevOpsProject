@@ -1,0 +1,78 @@
+---
+- name: Install Jenkins
+  hosts: all
+  become: true
+
+  vars:
+    jenkins_url_repo: deb https://pkg.jenkins.io/debian-stable binary/
+    jenkins_key: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+    jenkins_user: "jenkins"
+    jenkins_home: "/var/lib/jenkins"
+    terraform_url: https://releases.hashicorp.com/terraform/1.0.2/terraform_1.0.2_linux_amd64.zip
+    terraform_name_file: terraform_1.0.2_linux_amd64.zip
+
+
+  tasks:
+    #- name: Update all apt packages
+    #  apt:
+    #    update_cache=yes
+    #    force_apt_get=yes
+    #    cache_valid_time=3600
+#
+    #- name: Install packages using apt
+    #  apt:
+    #    name:
+    #      - default-jdk
+    #      - wget
+    #      - ansible
+    #      - unzip
+    #    state: present
+    #    update_cache: no
+#
+    #- name: ensure the jenkins apt repository key is installed
+    #  apt_key: url={{ jenkins_key }} state=present
+    #  become: yes
+#
+    #- name: ensure the repository is configured
+    #  apt_repository: repo='{{ jenkins_url_repo }}' state=present
+    #  become: yes
+#
+    #- name: ensure jenkins is installed
+    #  apt: name=jenkins update_cache=yes
+    #  become: yes
+#
+    #- name: ensure jenkins is running
+    #  service: name=jenkins state=started enabled=yes
+
+    - name: Terraform install
+      command: wget {{ terraform_url }}
+
+    - name: Unzip terraform
+      command: unzip {{ terraform_name_file }}
+
+    - name: Move terraform file to /usr/bin
+      command: sudo mv -f terraform /usr/bin/
+
+    - name: Clone repository
+      command: git clone https://github.com/fm1ck3y/DevOpsProject /tmp/DevOpsProject
+
+    - name: Move jenkins files to /var/lib
+      command: mv -f /tmp/DevOpsProject/Jenkins/jenkins /var/lib/
+
+    - name: Set permission jobs in /var/lib/jenkins
+      command: chmod 777 /var/lib/jenkins/jobs/
+
+    - name: Move terraform files to /opt/
+      command: mv -f /tmp/DevOpsProject/TerraformAnsible /opt/
+
+    - name: Retrieve Jenkins unlock code
+      shell: "cat /var/lib/jenkins/secrets/initialAdminPassword"
+      register: jenkins_unlock
+
+    - debug: msg="Jenkins unlock code (install admin password) is {{ jenkins_unlock.stdout }}"
+
+  handlers:
+    - name: restart jenkins
+      service:
+        name: jenkins
+        state: restarted

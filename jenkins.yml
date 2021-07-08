@@ -13,36 +13,36 @@
 
 
   tasks:
-    #- name: Update all apt packages
-    #  apt:
-    #    update_cache=yes
-    #    force_apt_get=yes
-    #    cache_valid_time=3600
-#
-    #- name: Install packages using apt
-    #  apt:
-    #    name:
-    #      - default-jdk
-    #      - wget
-    #      - ansible
-    #      - unzip
-    #    state: present
-    #    update_cache: no
-#
-    #- name: ensure the jenkins apt repository key is installed
-    #  apt_key: url={{ jenkins_key }} state=present
-    #  become: yes
-#
-    #- name: ensure the repository is configured
-    #  apt_repository: repo='{{ jenkins_url_repo }}' state=present
-    #  become: yes
-#
-    #- name: ensure jenkins is installed
-    #  apt: name=jenkins update_cache=yes
-    #  become: yes
-#
-    #- name: ensure jenkins is running
-    #  service: name=jenkins state=started enabled=yes
+    - name: Update all apt packages
+      apt:
+        update_cache=yes
+        force_apt_get=yes
+        cache_valid_time=3600
+
+    - name: Install packages using apt
+      apt:
+        name:
+          - default-jdk
+          - wget
+          - ansible
+          - unzip
+        state: present
+        update_cache: no
+
+    - name: ensure the jenkins apt repository key is installed
+      apt_key: url={{ jenkins_key }} state=present
+      become: yes
+
+    - name: ensure the repository is configured
+      apt_repository: repo='{{ jenkins_url_repo }}' state=present
+      become: yes
+
+    - name: ensure jenkins is installed
+      apt: name=jenkins update_cache=yes
+      become: yes
+
+    - name: ensure jenkins is running
+      service: name=jenkins state=started enabled=yes
 
     - name: Terraform install
       command: wget {{ terraform_url }}
@@ -57,10 +57,10 @@
       command: git clone https://github.com/fm1ck3y/DevOpsProject /tmp/DevOpsProject
 
     - name: Move jenkins files to /var/lib
-      command: mv -f /tmp/DevOpsProject/Jenkins/jenkins /var/lib/
+      command: cp -r /tmp/DevOpsProject/Jenkins/jenkins /var/lib/
 
     - name: Set permission jobs in /var/lib/jenkins
-      command: chmod 777 /var/lib/jenkins/jobs/
+      file: path=/var/lib/jenkins/jobs mode=01777 state=directory recurse=yes
 
     - name: Move terraform files to /opt/
       command: mv -f /tmp/DevOpsProject/TerraformAnsible /opt/
@@ -68,6 +68,8 @@
     - name: Retrieve Jenkins unlock code
       shell: "cat /var/lib/jenkins/secrets/initialAdminPassword"
       register: jenkins_unlock
+      notify:
+        - restart jenkins
 
     - debug: msg="Jenkins unlock code (install admin password) is {{ jenkins_unlock.stdout }}"
 

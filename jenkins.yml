@@ -8,6 +8,8 @@
     jenkins_key: https://pkg.jenkins.io/debian-stable/jenkins.io.key
     jenkins_user: "jenkins"
     jenkins_home: "/var/lib/jenkins"
+    jenkins_admin_username: "jadmin"
+    jenkins_admin_password: "admin"
     terraform_url: https://releases.hashicorp.com/terraform/1.0.2/terraform_1.0.2_linux_amd64.zip
     terraform_name_file: terraform_1.0.2_linux_amd64.zip
 
@@ -63,10 +65,33 @@
       command: cp -r /tmp/DevOpsProject/Jenkins/jenkins /var/lib/
 
     - name: Set permission jobs in /var/lib/jenkins
-      file: path=/var/lib/jenkins/jobs mode=01777 state=directory recurse=yes
+      file: path=/var/lib/jenkins/jobs owner=jenkins group=jenkins mode=01777 state=directory recurse=yes
+
+    - name: Set permission nodes in /var/lib/jenkins
+      file: path=/var/lib/jenkins/nodes owner=jenkins group=jenkins mode=01777 state=directory recurse=yes
+
+    - name: Set permission credentials in /var/lib/jenkins
+      file: path=/var/lib/jenkins/credentials.xml owner=jenkins group=jenkins mode=01777
 
     - name: Move terraform files to /opt/
       command: mv -f /tmp/DevOpsProject/TerraformAnsible /opt/
+
+    - name: Set permission credentials in /var/lib/jenkins
+      file: path=/opt/TerraformAnsible mode=01777 state=directory recurse=yes
+
+    - name: Init terraform
+      command: terraform -chdir=/opt/TerraformAnsible init
+
+    - name: Create initialization scripts directory
+      file: path={{ jenkins_home }}/init.groovy.d
+        state=directory
+        owner=jenkins
+        group=jenkins
+        mode=0775
+
+    - name: Add initialization script to setup basic security
+      template: src=./Jenkins/security.groovy.j2
+        dest={{ jenkins_home }}/init.groovy.d/security.groovy
 
     - name: Retrieve Jenkins unlock code
       shell: "cat /var/lib/jenkins/secrets/initialAdminPassword"

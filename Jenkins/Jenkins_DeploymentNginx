@@ -5,9 +5,9 @@ pipeline {
     parameters {
         string(name: 'aws_access_key_id', defaultValue: '', description: 'Access key for AWS:')
         string(name: 'aws_secret_access_key', defaultValue: '', description: 'Secret access key for AWS:')
-        choice(name: 'selected_type_job', choices: ['Start'], description: 'Typed run job')
+        choice(name: 'selected_type_job', choices: ['Start','Destroy'], description: 'Typed run job')
     }
-    
+
     environment {
         PATH_TO_TERRAFORM_CONF = "/opt/TerraformAnsible/"
     }
@@ -17,17 +17,22 @@ pipeline {
         stage('Start Main VM'){
             when { expression { return params.selected_type_job == 'Start' } }
                 steps {
-                    sh "export AWS_ACCESS_KEY_ID=${params.aws_access_key_id}"
-                    sh "export AWS_SECRET_ACCESS_KEY=${params.aws_secret_access_key}"
                     script {
                         try {
-                            sh "sudo terraform -chdir=${env.PATH_TO_TERRAFORM_CONF} init"
-                        }
-                        catch (Exception e) {
                             sh "terraform -chdir=${env.PATH_TO_TERRAFORM_CONF} init"
                         }
+                        catch (Exception e) {
+                            echo "Bad init terraform"
+                        }
                     }
-                    sh "terraform -chdir=${env.PATH_TO_TERRAFORM_CONF} apply -auto-approve -lock=False"
+                    sh "export AWS_SECRET_ACCESS_KEY=${params.aws_secret_access_key} && export AWS_ACCESS_KEY_ID=${params.aws_access_key_id} && terraform -chdir=${env.PATH_TO_TERRAFORM_CONF} apply -auto-approve -lock=False"
+                }
+        }
+
+        stage('Destroy Main VM'){
+            when { expression { return params.selected_type_job == 'Destroy' } }
+                steps {
+                    sh "export AWS_SECRET_ACCESS_KEY=${params.aws_secret_access_key} && export AWS_ACCESS_KEY_ID=${params.aws_access_key_id} && terraform -chdir=${env.PATH_TO_TERRAFORM_CONF} destroy -auto-approve -lock=False"
                 }
         }
     }

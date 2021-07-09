@@ -13,6 +13,10 @@
       docker_compose_version: "1.24.0"
 
   tasks:
+    - name: Sleep 60 sec
+      pause:
+        minutes: 1
+
     - name: Update all apt packages
       apt:
         update_cache=yes

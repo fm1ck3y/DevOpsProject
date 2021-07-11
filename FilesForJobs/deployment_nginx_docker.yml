@@ -16,6 +16,7 @@
     - name: Update all apt packages
       retries: 5
       delay: 30
+      ignore_errors: yes
       apt:
         update_cache=yes
         force_apt_get=yes
@@ -24,6 +25,7 @@
     - name: Install packages using apt
       retries: 5
       delay: 30
+      ignore_errors: yes
       apt:
         name:
           - apt-transport-https

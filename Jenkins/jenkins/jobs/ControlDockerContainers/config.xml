@@ -7,8 +7,8 @@
       <triggers/>
       <parameters>
         <string>selected_type_job</string>
-        <string>aws_access_key_id</string>
-        <string>aws_secret_access_key</string>
+        <string>public_ip</string>
+        <string>ssh_user</string>
       </parameters>
       <options/>
     </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
@@ -38,21 +38,23 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.StringParameterDefinition>
-          <name>aws_access_key_id</name>
-          <description>Access key for AWS:</description>
+          <name>ssh_user</name>
+          <description>Username Main VM</description>
+          <defaultValue>ubuntu</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
-          <name>aws_secret_access_key</name>
-          <description>Secret access key for AWS:</description>
+          <name>public_ip</name>
+          <description>DNS or IP Main VM</description>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.ChoiceParameterDefinition>
           <name>selected_type_job</name>
           <description>Typed run job</description>
           <choices>
+            <string>Restart</string>
             <string>Start</string>
-            <string>Destroy</string>
+            <string>Stop</string>
           </choices>
         </hudson.model.ChoiceParameterDefinition>
       </parameterDefinitions>
@@ -75,7 +77,7 @@
       <submoduleCfg class="empty-list"/>
       <extensions/>
     </scm>
-    <scriptPath>Jenkins/Jenkins_DeploymentNginx</scriptPath>
+    <scriptPath>Jenkins/Jenkins_ControlDockerContainers</scriptPath>
     <lightweight>true</lightweight>
   </definition>
   <triggers/>

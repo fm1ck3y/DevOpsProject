@@ -16,12 +16,16 @@
 
   tasks:
     - name: Update all apt packages
+      retries: 5
+      delay: 30
       apt:
         update_cache=yes
         force_apt_get=yes
         cache_valid_time=3600
 
     - name: Install packages using apt
+      retries: 5
+      delay: 30
       apt:
         name:
           - default-jdk
@@ -92,6 +96,17 @@
     - name: Add initialization script to setup basic security
       template: src=./Jenkins/security.groovy.j2
         dest={{ jenkins_home }}/init.groovy.d/security.groovy
+
+    - name: Turn off Jenkins setup wizard
+      lineinfile:
+        dest: /etc/init.d/jenkins
+        regexp: '^JAVA_ARGS='
+        line: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"'
+        insertbefore: '^DAEMON_ARGS='
+      notify: restart jenkins
+
+    - name: restart jenkins
+      service: name=jenkins state=restarted
 
     - name: Retrieve Jenkins unlock code
       shell: "cat /var/lib/jenkins/secrets/initialAdminPassword"

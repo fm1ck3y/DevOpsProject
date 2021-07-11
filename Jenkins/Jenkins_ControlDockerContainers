@@ -1,0 +1,44 @@
+pipeline {
+    agent {
+        label 'AWS-Agent'
+    }
+    parameters {
+        choice(name: 'selected_type_job', choices: ['Restart', 'Start', 'Stop'], description: 'Typed run job')
+
+    }
+
+    environment {
+        PATH_TO_DOCKER_COMPOSE = "/opt/ApiWithNginx/docker-compose.yml"
+    }
+
+
+    stages {
+        stage('Build dockers'){
+            when { expression { return params.selected_type_job == 'Start' } }
+            steps{
+                sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} build"
+            }
+        }
+
+        stage ('Restart dockers') {
+            when { expression { return params.selected_type_job == 'Restart' } }
+                steps {
+                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} restart"
+                }
+        }
+
+        stage ('Stop dockers') {
+            when { expression { return params.selected_type_job == 'Stop' } }
+                steps {
+                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} down"
+                }
+        }
+
+        stage ('Start dockers') {
+            when { expression { return params.selected_type_job == 'Start' } }
+                steps {
+                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} up -d"
+                }
+        }
+    }
+}

@@ -13,23 +13,22 @@
       docker_compose_version: "1.24.0"
 
   tasks:
-    - name: Sleep 60 sec
-      pause:
-        minutes: 1
-
     - name: Update all apt packages
+      retries: 5
+      delay: 30
       apt:
         update_cache=yes
         force_apt_get=yes
         cache_valid_time=3600
 
     - name: Install packages using apt
+      retries: 5
+      delay: 30
       apt:
         name:
           - apt-transport-https
           - ca-certificates
           - curl
-          #- gnupg2
           - software-properties-common
           - default-jre
           - git

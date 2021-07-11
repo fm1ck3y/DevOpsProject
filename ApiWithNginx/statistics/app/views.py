@@ -28,5 +28,4 @@ def not_found(error=None):
 def get_statistics():
     count_with_json = database.Database().count_users_json()
     count_without_json = database.Database().count_users_sql()
-
     return render_template('index.html', count_with_json=count_with_json, count_without_json= count_without_json)

@@ -46,9 +46,15 @@ class Database:
             return 0
 
     def count_users_sql(self):
-        count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITHOUT_JSON};")
-        return int(count)
+        try:
+            count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITHOUT_JSON};")
+            return int(count)
+        except Exception:
+            return 0
 
     def count_users_json(self):
-        count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITH_JSON};")
-        return int(count)
+        try:
+            count,*_ =  self.execute_sql(f"SELECT COUNT(id) FROM {TABLE_NAME_WITH_JSON};")
+            return int(count)
+        except Exception:
+            return 0

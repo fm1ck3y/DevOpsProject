@@ -78,13 +78,13 @@
       file: path=/var/lib/jenkins/credentials.xml owner=jenkins group=jenkins mode=01777
 
     - name: Move terraform files to /opt/
-      command: mv -f /tmp/DevOpsProject/TerraformAnsible /opt/
+      command: mv -f /tmp/DevOpsProject/FilesForJobs /opt/
 
     - name: Set permission credentials in /var/lib/jenkins
-      file: path=/opt/TerraformAnsible mode=01777 state=directory recurse=yes
+      file: path=/opt/FilesForJobs mode=01777 state=directory recurse=yes
 
     - name: Init terraform
-      command: terraform -chdir=/opt/TerraformAnsible init
+      command: terraform -chdir=/opt/FilesForJobs init
 
     - name: Create initialization scripts directory
       file: path={{ jenkins_home }}/init.groovy.d

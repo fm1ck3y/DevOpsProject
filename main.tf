@@ -1,7 +1,7 @@
 locals {
   ssh_user         = "ubuntu"
-  private_key_path = "./TerraformAnsible/keys/ssh/id_rsa"
-  public_key_path  = "./TerraformAnsible/keys/ssh/id_rsa.pub"
+  private_key_path = "./FilesForJobs/keys/ssh/id_rsa"
+  public_key_path  = "./FilesForJobs/keys/ssh/id_rsa.pub"
 }
 
 provider "aws" {

@@ -2,11 +2,11 @@ import requests
 import sys
 import random
 
-if len(sys.argv) <= 1:
+if len(sys.argv) < 3:
     exit()
 
 N = int(sys.argv[1])
-HOST = "http://127.0.0.1"
+HOST = sys.argv[2]
 
 NAMES = ["Artem Vdovin", "Igor Lepeyko"]
 EMAILS = ["123@mail.ru","456@mail.ru"]

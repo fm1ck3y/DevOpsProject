@@ -1,0 +1,15 @@
+---
+- name: Change configuration NGINX
+  hosts: all
+  become: true
+
+  vars:
+    PATH_TO_DOCKER_COMPOSE: /opt/ApiWithNginx/docker-compose.yml
+    PATH_TO_SCRIPT_NGINX_CONF: /opt/ApiWithNginx/nginx/conf.d/change_configuration.py
+
+  tasks:
+    - name: Change weights
+      command: "python3 {{ PATH_TO_SCRIPT_NGINX_CONF }} {{ weight_api_without_json }} {{ weight_api_with_json }}"
+
+    - name: Restart dockers
+      command: "docker-compose -f {{ PATH_TO_DOCKER_COMPOSE }} stop"

@@ -1,43 +1,39 @@
 pipeline {
     agent {
-        label 'AWS-Agent'
+        label 'master'
     }
     parameters {
+        string(name: 'ssh_user', defaultValue: 'ubuntu', description: 'Username Main VM')
+        string(name: 'public_ip', defaultValue: '', description: 'DNS or IP Main VM')
         choice(name: 'selected_type_job', choices: ['Restart', 'Start', 'Stop'], description: 'Typed run job')
-
     }
 
     environment {
         PATH_TO_DOCKER_COMPOSE = "/opt/ApiWithNginx/docker-compose.yml"
+        PATH_TO_ANSIBLE_CONFIGS = "/opt/FilesForJobs/control_dockers.yml"
+        PRIVATE_KEY_PATH = "/opt/FilesForJobs/keys/ssh/id_rsa"
     }
 
 
     stages {
-        stage('Build dockers'){
-            when { expression { return params.selected_type_job == 'Start' } }
-            steps{
-                sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} build"
-            }
-        }
-
         stage ('Restart dockers') {
             when { expression { return params.selected_type_job == 'Restart' } }
                 steps {
-                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} restart"
+                    sh "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${params.ssh_user} -i ${params.public_ip}, --extra-vars \"type=Restart\" --private-key ${env.PRIVATE_KEY_PATH} ${env.PATH_TO_ANSIBLE_CONFIGS}"
                 }
         }
 
         stage ('Stop dockers') {
             when { expression { return params.selected_type_job == 'Stop' } }
                 steps {
-                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} down"
+                    sh "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${params.ssh_user} -i ${params.public_ip}, --extra-vars \"type=Stop\" --private-key ${env.PRIVATE_KEY_PATH} ${env.PATH_TO_ANSIBLE_CONFIGS}"
                 }
         }
 
         stage ('Start dockers') {
             when { expression { return params.selected_type_job == 'Start' } }
                 steps {
-                    sh "sudo docker-compose -f ${env.PATH_TO_DOCKER_COMPOSE} up -d"
+                    sh "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${params.ssh_user} -i ${params.public_ip}, --extra-vars \"type=Start\" --private-key ${env.PRIVATE_KEY_PATH} ${env.PATH_TO_ANSIBLE_CONFIGS}"
                 }
         }
     }

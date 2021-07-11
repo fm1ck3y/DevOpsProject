@@ -4,17 +4,18 @@ pipeline {
     }
     parameters {
         string(name: 'count_requests', defaultValue: '10', description: 'Count requests for API:')
+        string(name: 'public_ip', defaultValue: '', description: 'DNS or IP Main VM')
     }
     
     environment {
-        PATH_TO_SCRIPT_NGINX_CONF = "/opt/ApiWithNginx/nginx/generate_data.py"
+        PATH_TO_SCRIPT_NGINX_CONF = "/opt/FilesForJobs/generate_data.py"
     }
 
 
     stages {
         stage('Create requests'){
             steps {
-                sh "sudo python3 ${env.PATH_TO_SCRIPT_NGINX_CONF} ${params.count_requests}"
+                sh "sudo python3 ${env.PATH_TO_SCRIPT_NGINX_CONF} ${params.count_requests} ${params.public_ip}"
             }
         }
     }

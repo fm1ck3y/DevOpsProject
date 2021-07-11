@@ -9,7 +9,7 @@ pipeline {
     }
 
     environment {
-        PATH_TO_TERRAFORM_CONF = "/opt/TerraformAnsible/"
+        PATH_TO_TERRAFORM_CONF = "/opt/FilesForJobs/"
     }
 
 

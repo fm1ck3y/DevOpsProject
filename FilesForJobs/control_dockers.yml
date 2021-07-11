@@ -1,0 +1,32 @@
+---
+- name: Control dockers
+  hosts: all
+  become: true
+
+  vars:
+    PATH_TO_DOCKER_COMPOSE: /opt/ApiWithNginx/docker-compose.yml
+
+  tasks:
+    - name: Build dockers
+      block:
+        - name: Build dockers
+          command: "docker-compose -f {{ PATH_TO_DOCKER_COMPOSE }} build"
+      when: type == 'Start'
+
+    - name: Start and build dockers
+      block:
+      - name: Start dockers
+        command: "docker-compose -f {{ PATH_TO_DOCKER_COMPOSE }} up -d"
+      when: type == 'Start'
+
+    - name: Stop dockers
+      block:
+      - name: Stop dockers
+        command: "docker-compose -f {{ PATH_TO_DOCKER_COMPOSE }} down"
+      when: type == 'Stop'
+
+    - name: Restart dockers
+      block:
+      - name: Restart dockers
+        command: "docker-compose -f {{ PATH_TO_DOCKER_COMPOSE }} restart"
+      when: type == 'Restart'

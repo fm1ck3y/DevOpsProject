@@ -17,7 +17,7 @@ pipeline {
             steps {
                 sh "python3 ${env.PATH_TO_SCRIPT_NGINX_CONF} ${params.count_requests} ${params.public_ip}"
                 script{
-                    currentBuild.description = "link: <a ref='http://${params.public_ip}/api/v1.0/statistics'>Statistics in Charts</a>"
+                    currentBuild.description = "<a href='http://${params.public_ip}:5003/api/v1.0/statistics'>Statistics in Charts</a>"
                 }
             }
         }

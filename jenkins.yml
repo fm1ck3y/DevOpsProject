@@ -18,7 +18,8 @@
     - name: Update all apt packages
       retries: 5
       delay: 30
-      ignore_errors: yes
+      register: result
+      until: result.rc == 0
       apt:
         update_cache=yes
         force_apt_get=yes
@@ -27,7 +28,8 @@
     - name: Install packages using apt
       retries: 5
       delay: 30
-      ignore_errors: yes
+      register: result
+      until: result.rc == 0
       apt:
         name:
           - default-jdk
@@ -72,6 +74,9 @@
 
     - name: Set permission jobs in /var/lib/jenkins
       file: path=/var/lib/jenkins/jobs owner=jenkins group=jenkins mode=01777 state=directory recurse=yes
+
+    - name: Set permission config file in /var/lib/jenkins
+      file: path=/var/lib/jenkins/config.xml owner=jenkins group=jenkins mode=01777
 
     - name: Move terraform files to /opt/
       command: mv -f /tmp/DevOpsProject/FilesForJobs /opt/

@@ -16,7 +16,8 @@
     - name: Update all apt packages
       retries: 5
       delay: 30
-      ignore_errors: yes
+      register: result
+      until: result.rc == 0
       apt:
         update_cache=yes
         force_apt_get=yes
@@ -25,14 +26,14 @@
     - name: Install packages using apt
       retries: 5
       delay: 30
-      ignore_errors: yes
+      register: result
+      until: result.rc == 0
       apt:
         name:
           - apt-transport-https
           - ca-certificates
           - curl
           - software-properties-common
-          - default-jre
           - git
         state: present
         update_cache: no

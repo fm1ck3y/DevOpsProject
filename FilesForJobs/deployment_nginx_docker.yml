@@ -17,7 +17,7 @@
       retries: 5
       delay: 30
       register: result
-      until: : result is succeeded
+      until: result is succeeded
       apt:
         update_cache=yes
         force_apt_get=yes
@@ -27,7 +27,7 @@
       retries: 5
       delay: 30
       register: result
-      until: : result is succeeded
+      until: result is succeeded
       apt:
         name:
           - apt-transport-https

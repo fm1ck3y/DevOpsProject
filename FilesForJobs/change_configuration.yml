@@ -1,6 +1,6 @@
 ---
 - name: Change configuration NGINX
-  hosts: all
+  hosts: main_vm
   become: true
 
   vars:

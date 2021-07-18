@@ -73,6 +73,10 @@ resource "aws_instance" "main_vm" {
   provisioner "local-exec" {
     command = "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${local.ssh_user} -i ${aws_instance.main_vm.public_ip}, --private-key ${local.private_key_path} /opt/FilesForJobs/deployment_nginx_docker.yml"
   }
+
+  provisioner "local-exec" {
+    command = "echo '[main_vm]\n${aws_instance.main_vm.public_ip}   ansible_connection=ssh   ansible_user=${local.ssh_user}    ansible_ssh_private_key_file=${local.private_key_path}' > /opt/FilesForJobs/inventory.ini"
+  }
 }
 
 output "main_vm_ip" {

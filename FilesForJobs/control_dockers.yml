@@ -1,6 +1,6 @@
 ---
 - name: Control dockers
-  hosts: all
+  hosts: main_vm
   become: true
 
   vars:

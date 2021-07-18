@@ -78,8 +78,14 @@
     - name: Set permission config file in /var/lib/jenkins
       file: path=/var/lib/jenkins/config.xml owner=jenkins group=jenkins mode=01777
 
+    - name: Set permission AnsiColor file in /var/lib/jenkins
+      file: path=/var/lib/jenkins/hudson.plugins.ansicolor.AnsiColorBuildWrapper.xml owner=jenkins group=jenkins mode=01777
+
     - name: Move terraform files to /opt/
       command: mv -f /tmp/DevOpsProject/FilesForJobs /opt/
+
+    - name: Create inventory file in /opt/FilesForJobs/
+      file: path=/opt/FilesForJobs/ state=touch owner=jenkins group=jenkins mode=01777
 
     - name: Init terraform
       command: terraform -chdir=/opt/FilesForJobs init

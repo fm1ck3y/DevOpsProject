@@ -3,15 +3,12 @@ pipeline {
         label 'master'
     }
     parameters {
-        string(name: 'ssh_user', defaultValue: 'ubuntu', description: 'Username Main VM')
-        string(name: 'public_ip', defaultValue: '', description: 'DNS or IP Main VM')
         choice(name: 'selected_type_job', choices: ['Restart', 'Start', 'Stop'], description: 'Typed run job')
     }
 
     environment {
-        PATH_TO_DOCKER_COMPOSE = "/opt/ApiWithNginx/docker-compose.yml"
         PATH_TO_ANSIBLE_CONFIGS = "/opt/FilesForJobs/control_dockers.yml"
-        PRIVATE_KEY_PATH = "/opt/FilesForJobs/keys/ssh/id_rsa"
+        PATH_TO_ANSIBLE_INVENTORY = "/opt/FilesForJobs/inventory.ini"
     }
 
 
@@ -19,21 +16,42 @@ pipeline {
         stage ('Restart dockers') {
             when { expression { return params.selected_type_job == 'Restart' } }
                 steps {
-                    sh "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${params.ssh_user} -i ${params.public_ip}, --extra-vars \"type=Restart\" --private-key ${env.PRIVATE_KEY_PATH} ${env.PATH_TO_ANSIBLE_CONFIGS}"
+                    ansiColor('xterm'){
+                        ansiblePlaybook(
+                            playbook: "${env.PATH_TO_ANSIBLE_CONFIGS}",
+                            inventory: "${env.PATH_TO_ANSIBLE_INVENTORY}",
+                            hostKeyChecking: false,
+                            extraVars: [type : 'Restart'],
+                            colorized: true)
+                    }
                 }
         }
 
         stage ('Stop dockers') {
             when { expression { return params.selected_type_job == 'Stop' } }
                 steps {
-                    sh "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${params.ssh_user} -i ${params.public_ip}, --extra-vars \"type=Stop\" --private-key ${env.PRIVATE_KEY_PATH} ${env.PATH_TO_ANSIBLE_CONFIGS}"
+                    ansiColor('xterm'){
+                        ansiblePlaybook(
+                            playbook: "${env.PATH_TO_ANSIBLE_CONFIGS}",
+                            inventory: "${env.PATH_TO_ANSIBLE_INVENTORY}",
+                            hostKeyChecking: false,
+                            extraVars: [type : 'Stop'],
+                            colorized: true)
+                    }
                 }
         }
 
         stage ('Start dockers') {
             when { expression { return params.selected_type_job == 'Start' } }
                 steps {
-                    sh "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${params.ssh_user} -i ${params.public_ip}, --extra-vars \"type=Start\" --private-key ${env.PRIVATE_KEY_PATH} ${env.PATH_TO_ANSIBLE_CONFIGS}"
+                    ansiColor('xterm'){
+                        ansiblePlaybook(
+                            playbook: "${env.PATH_TO_ANSIBLE_CONFIGS}",
+                            inventory: "${env.PATH_TO_ANSIBLE_INVENTORY}",
+                            hostKeyChecking: false,
+                            extraVars: [type : 'Start'],
+                            colorized: true)
+                    }
                 }
         }
     }

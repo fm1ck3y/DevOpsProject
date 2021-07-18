@@ -5,22 +5,28 @@ pipeline {
     parameters {
         string(name: 'weight_api_without_json', defaultValue: '1', description: 'Weight  for api without json:')
         string(name: 'weight_api_with_json', defaultValue: '1', description: 'Weight  for api with json:')
-        string(name: 'ssh_user', defaultValue: 'ubuntu', description: 'Username Main VM')
-        string(name: 'public_ip', defaultValue: '', description: 'DNS or IP Main VM')
 
     }
 
     environment {
         PATH_TO_ANSIBLE_CONFIGS = "/opt/FilesForJobs/change_configuration.yml"
-        PRIVATE_KEY_PATH = "/opt/FilesForJobs/keys/ssh/id_rsa"
+        PATH_TO_ANSIBLE_INVENTORY = "/opt/FilesForJobs/inventory.ini"
     }
 
 
     stages {
         stage('Change weights in nginx.conf'){
             steps {
-                sh "export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook -u ${params.ssh_user} -i ${params.public_ip}, --extra-vars \"weight_api_without_json=${params.weight_api_without_json} weight_api_with_json=${params.weight_api_with_json}\" --private-key ${env.PRIVATE_KEY_PATH} ${env.PATH_TO_ANSIBLE_CONFIGS}"
-            }
+                    ansiColor('xterm'){
+                        ansiblePlaybook(
+                            playbook: "${env.PATH_TO_ANSIBLE_CONFIGS}",
+                            inventory: "${env.PATH_TO_ANSIBLE_INVENTORY}",
+                            hostKeyChecking: false,
+                            extraVars: [weight_api_without_json : "${params.weight_api_without_json}",
+                                        weight_api_with_json : "${params.weight_api_with_json}"],
+                            colorized: true)
+                    }
+                }
         }
     }
 }
